@@ -25,54 +25,6 @@ describe.only('Things Endpoints', function() {
 
   afterEach('cleanup', () => helpers.cleanTables(db))
 
-  describe.only(`Protected endpoints`, () => {
-    beforeEach('insert things', () => {
-      helpers.seedThingsTables(
-        db,
-        testUsers,
-        testThings,
-        testReviews,
-      )
-    })
-
-    const protectedEndpoints = [
-      {
-        name: 'GET /api/things/:thing_id',
-        path: '/api/things/1'
-      },
-      {
-        name: 'GET /api/things/:thing_id/reivews',
-        path: '/api/things/1/reviews'
-      },
-    ]
-
-    protectedEndpoints.forEach(endpoint => {
-    describe(endpoint.name, () => {
-      it(`responds with 401 'Missing bearer token' when no bearer token`, () => {
-        return supertest(app)
-          .get(`/api/things/123`)
-          .expect(401, { error: `Missing bearer token` })
-      })
-
-      it(`responds 401 'Unauthorized request' when invalid JWT secret`, () => {
-        const validUser = testUsers[0]
-        const invalidSecret = 'bad-secret'
-        return supertest(app)
-          .get(endpoint.path)
-          .set('Authorization', helpers.makeAuthHeader(validUser, invalidSecret))
-          .expect(401, { error: `Unauthorized request` })
-      })
-
-      it(`responds 401 'Unauthorized request' when invalid sub in payload`, () => {
-        const invalidUser = { user_name: 'user-not-existy', id: 1 }
-        return supertest(app)
-          .get(endpoint.path)
-          .set('Authorization', helpers.makeAuthHeader(invalidUser))
-          .expect(401, { error: `Unauthorized request` })
-      })
-    })
-  })
-
   describe(`GET /api/things`, () => {
     context(`Given no things`, () => {
       it(`responds with 200 and an empty list`, () => {
@@ -144,6 +96,7 @@ describe.only('Things Endpoints', function() {
         const thingId = 123456
         return supertest(app)
           .get(`/api/things/${thingId}`)
+          .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
           .expect(404, { error: `Thing doesn't exist` })
       })
     })
@@ -240,4 +193,4 @@ describe.only('Things Endpoints', function() {
     })
   })
 })
-})
+// })
