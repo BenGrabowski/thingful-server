@@ -51,7 +51,7 @@ describe.only('Reviews Endpoints', function() {
         thing_id: testThing.id,
         // user_id: testUser.id,
       }
-      console.log(newReview.text)
+      // console.log(newReview.text)
       return supertest(app)
         .post('/api/reviews')
         .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
